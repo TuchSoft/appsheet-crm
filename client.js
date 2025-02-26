@@ -212,30 +212,7 @@ function init() {
         return params.get(name);
     }
 
-    function addCss(txt) {
-        const style = document.createElement("style");
-        style.innerHTML = txt;
-        document.head.appendChild(style);
-    }
 
-    function addScript(txt) {
-        const script = document.createElement("script");
-        script.innerHTML = txt;
-        document.head.appendChild(script);
-    }
-
-    function addExternalCss(url) {
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = url;
-        document.head.appendChild(link);
-    }
-
-    function addExternalScript(url) {
-        const script = document.createElement("script");
-        script.src = url;
-        document.head.appendChild(script);
-    }
 
 
     // Aspetta mezzo secondo e poi esegue la funzione
