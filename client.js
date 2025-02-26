@@ -3,7 +3,7 @@ function init() {
         document.body['data-init'] = 1;
         dashboard();
         initStatusColor();
-        initEditor();
+        addEditorStyle();
     }
 
     function dashboard() {
@@ -146,11 +146,7 @@ function init() {
         });
     }
 
-    function initEditor() {
-
-        
-        addExternalCss("https://cdn.jsdelivr.net/npm/easymde/dist/easymde.dark.min.css");
-        addExternalScript("https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js");
+    function addEditorStyle() {
         addCss(`
             .EasyMDEContainer .CodeMirror {
                     color: #ccc;
@@ -187,22 +183,6 @@ function init() {
                     background: #000;
                 }
             `);
-        console.log(window);
-            setTimeout(() => {
-                    document.querySelectorAll('.LongTextTypeInput > textarea').forEach(el => {
-                        if (el["data-mde"] == 1) return;
-                        el["data-mde"] = 1;
-                        new EasyMDE(
-                        {
-                            element: el,
-                            maxHeight: '150px',
-                            forceSync: true,
-                            lineWrapping: true,
-                            indentWithTabs: false,
-                        }
-                        );
-                    });
-                }, 1000);
     }
 
 
