@@ -151,7 +151,8 @@ function init() {
             .EasyMDEContainer .CodeMirror {
                     color: #ccc;
                     border-color: #333;
-                 
+                         text-align: start;
+                   background-color: #111;
                 }
                 .EasyMDEContainer .cm-s-easymde .CodeMirror-cursor {
                     border-color: #ccc;
@@ -166,7 +167,7 @@ function init() {
                 }
 
                 .EasyMDEContainer .CodeMirror-fullscreen {
-                    background: #000;
+                    background: #111;
                 }
 
                 .editor-toolbar {
@@ -176,11 +177,11 @@ function init() {
                 }
 
                 .editor-toolbar.fullscreen {
-                    background: #000;
+                    background: #111;
                 }
 
                 .editor-preview {
-                    background: #000;
+                    background: #111;
                 }
             `);
     }
