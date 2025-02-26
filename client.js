@@ -151,7 +151,7 @@ function init() {
             .EasyMDEContainer .CodeMirror {
                     color: #ccc;
                     border-color: #333;
-                    background-color: #000;
+                 
                 }
                 .EasyMDEContainer .cm-s-easymde .CodeMirror-cursor {
                     border-color: #ccc;
