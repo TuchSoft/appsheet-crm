@@ -241,7 +241,7 @@ function init() {
     // Aspetta mezzo secondo e poi esegue la funzione
     setTimeout(() => {
         init()
-    }, 500);
+    }, 100);
 
     window.addEventListener("hashchange", () => {
         init();
