@@ -151,23 +151,6 @@ function init() {
         
         addExternalCss("https://cdn.jsdelivr.net/npm/easymde/dist/easymde.dark.min.css");
         addExternalScript("https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js");
-        addScript(`
-                setTimeout(() => {
-                    document.querySelectorAll('.LongTextTypeInput > textarea').forEach(el => {
-                        if (el["data-mde"] == 1) return;
-                        el["data-mde"] = 1;
-                        new EasyMDE(
-                        {
-                            element: el,
-                            maxHeight: '150px',
-                            forceSync: true,
-                            lineWrapping: true,
-                            indentWithTabs: false,
-                        }
-                        );
-                    });
-                }, 500);
-        `);
         addCss(`
             .EasyMDEContainer .CodeMirror {
                     color: #ccc;
@@ -204,6 +187,22 @@ function init() {
                     background: #000;
                 }
             `);
+
+            setTimeout(() => {
+                    document.querySelectorAll('.LongTextTypeInput > textarea').forEach(el => {
+                        if (el["data-mde"] == 1) return;
+                        el["data-mde"] = 1;
+                        new EasyMDE(
+                        {
+                            element: el,
+                            maxHeight: '150px',
+                            forceSync: true,
+                            lineWrapping: true,
+                            indentWithTabs: false,
+                        }
+                        );
+                    });
+                }, 500);
     }
 
 
@@ -218,7 +217,7 @@ function init() {
     // Aspetta mezzo secondo e poi esegue la funzione
     setTimeout(() => {
         init()
-    }, 100);
+    }, 300);
 
     window.addEventListener("hashchange", () => {
         init();
