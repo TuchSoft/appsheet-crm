@@ -1,0 +1,248 @@
+function init() {
+        if (document.body['data-init']) return;
+        document.body['data-init'] = 1;
+        dashboard();
+        initStatusColor();
+        initEditor();
+    }
+
+    function dashboard() {
+        const allowedViews = ["Projects_Detail", "Customers_Detail"]; // Array di view ammesse
+        const view = getUrlParameter("view");
+
+        // Controlla se la view è nell'array consentito
+        if (!allowedViews.includes(view)) {
+            console.log("View non ammessa:", view);
+            return;
+        }
+
+        const columns = document.querySelectorAll('[data-testid="slideshow-page-column"]');
+        if (!columns) return;
+        
+        // Seleziona il primo blocco di col1 e lo sposta nell'header
+        const infoCard = columns[0].querySelector('[data-testid="slideshow-page-card"]');
+        if (!infoCard) return;
+        
+        const headerColumn = document.querySelector('[data-testid="slideshow-page-header-column"]');
+        if (!headerColumn || headerColumn.children.length !== 1) return;
+        
+        headerColumn.appendChild(infoCard);
+
+        
+        
+        // Prende i restanti blocchi di col1 e tutti quelli di col2
+        const col1Cards = columns[0].querySelectorAll('[data-testid="slideshow-page-card"]');
+        const col2Cards = columns[1].querySelectorAll('[data-testid="slideshow-page-card"]');
+        
+        // Intercala i blocchi di col2 tra quelli di col1
+        const newOrder = [];
+        const maxLength = Math.max(col1Cards.length, col2Cards.length);
+        
+        if (col2Cards[0]) newOrder.push(col2Cards[0]);
+        for (let i = 0; i < maxLength; i++) {
+            if (col1Cards[i]) newOrder.push(col1Cards[i]);
+            if (col2Cards[i+1]) newOrder.push(col2Cards[i+1]);
+        }
+        console.log(newOrder);
+       
+        // Svuota col1 e riordina gli elementi
+        columns[0].innerHTML = "";
+        console.log(columns);
+        
+        newOrder.forEach((card) => {
+            console.log(card)
+            columns[0].appendChild(card)
+        });
+        
+        // Rimuove col2
+        columns[1].remove();
+        
+
+        // Inietta il CSS dinamicamente
+        addCss(`
+            [data-testid="slideshow-page-header-column"] > div[data-testid="slideshow-page-card"] {
+                min-height: 200px !important;
+                position: relative !important;
+            }
+            [data-testid="slideshow-page-header-column"] > div[data-testid="slideshow-page-card"]:nth-of-type(2) {
+                margin-top: 16px;
+            }
+            [data-testid="slideshow-page-column"], .DesktopModeContainer {
+                max-width: 100% !important;
+            }
+            .TableView__list > .EmptyView, .DeckView__list > .EmptyView {
+                min-height: 40px !important;
+            }
+
+        `);
+    }
+
+    function statusColor() {
+        document.querySelectorAll('.TextTypeDisplay__text').forEach(el => {
+            const text = el.textContent.trim().toLowerCase(); // Normalizza il testo
+            
+            const statusClasses = {
+                'active': 'status-active-text',
+                'draft': 'status-draft-text',
+                'on hold': 'status-onhold-text',
+                'archived': 'status-archived-text',
+                'to do': 'status-todo-text',
+                'in progress': 'status-inprogress-text',
+                'done': 'status-done-text'
+            };
+        
+            
+            
+        
+            // Aggiunge la classe specifica dello stato se esiste nella mappa
+            if (statusClasses[text]) {
+                el.classList.forEach(c => {
+                    if (c.includes('status-')) {
+                        el.classList.remove(c);
+                    }
+                });
+                el.classList.add(statusClasses[text]);
+                el.classList.add('status-text');
+                // Aggiunge la classe status-text-container al contenitore (elemento padre)
+                if (el.parentElement) {
+                    el.parentElement.classList.add('status-text-container');
+                }
+                //Aggiungi on change su text =>  statusColor()
+            }
+        
+            
+        });
+
+        addCss(`
+            .status-text-container {
+                border-radius: 4px;
+            }
+
+            .status-text {
+                padding: 8px;
+                line-height: 30px;
+            }
+
+            .status-active-text, .status-done-text { background-color: rgba(150, 255, 150, 0.15); color: rgb(39, 167, 65); border: 1px solid rgba(60, 255, 100, 0.5); }  
+            .status-draft-text { background-color: rgba(255, 255, 255, 0.2); color: rgba(255, 255, 255, 1); border: 1px solid rgba(150, 150, 150, 0.5); }  
+            .status-onhold-text { background-color: rgba(255, 200, 100, 0.15); color: rgba(255, 165, 0, 1); border: 1px solid rgba(255, 165, 0, 0.5); }  
+            .status-archived-text { background-color: rgba(227, 89, 34, 0.15); color: rgb(167, 59, 59); border: 1px solid rgba(100, 100, 100, 0.5); }  
+            .status-inprogress-text { background-color: rgba(100, 180, 255, 0.15); color: rgba(30, 144, 255, 1); border: 1px solid rgba(30, 144, 255, 0.5); }  
+            .status-todo-text { background-color: rgba(180, 100, 255, 0.15); color: rgba(138, 43, 226, 1); border: 1px solid rgba(138, 43, 226, 0.5); }  
+
+            `);
+        
+    }
+
+    function initStatusColor() {
+        statusColor();
+        // Osserva i cambiamenti nei nodi di testo e richiama statusColor() quando cambia il contenuto
+        const observer = new MutationObserver(() => {
+            statusColor();
+        });
+
+        document.querySelectorAll('.status-text-container').forEach(el => {
+            observer.observe(el, { childList: true, subtree: true, characterData: true });
+        });
+    }
+
+    function initEditor() {
+
+        
+        addExternalCss("https://cdn.jsdelivr.net/npm/easymde/dist/easymde.dark.min.css");
+        addExternalScript("https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js");
+        addScript(`
+                setTimeout(() => {
+                    document.querySelectorAll('.LongTextTypeInput > textarea').forEach(el => {
+                        if (el["data-mde"] == 1) return;
+                        el["data-mde"] = 1;
+                        new EasyMDE(
+                        {
+                            element: el,
+                            maxHeight: '150px',
+                            forceSync: true,
+                            lineWrapping: true,
+                            indentWithTabs: false,
+                        }
+                        );
+                    });
+                }, 500);
+        `);
+        addCss(`
+            .EasyMDEContainer .CodeMirror {
+                    color: #ccc;
+                    border-color: #333;
+                    background-color: #000;
+                }
+                .EasyMDEContainer .cm-s-easymde .CodeMirror-cursor {
+                    border-color: #ccc;
+                }
+
+                .EasyMDEContainer .editor-toolbar > * {
+                    color: #ccc;
+                }
+
+                .EasyMDEContainer .editor-toolbar > .active, .editor-toolbar > button:hover, .editor-preview pre, .cm-s-easymde .cm-comment {
+                    background-color: #444;
+                }
+
+                .EasyMDEContainer .CodeMirror-fullscreen {
+                    background: #000;
+                }
+
+                .editor-toolbar {
+                    border-top: 1px solid #333;
+                    border-left: 1px solid #333;
+                    border-right: 1px solid #333;
+                }
+
+                .editor-toolbar.fullscreen {
+                    background: #000;
+                }
+
+                .editor-preview {
+                    background: #000;
+                }
+            `);
+    }
+
+
+    function getUrlParameter(name) {
+        const params = new URLSearchParams(window.location.hash.substring(1)); // Rimuove il '#' iniziale
+        return params.get(name);
+    }
+
+    function addCss(txt) {
+        const style = document.createElement("style");
+        style.innerHTML = txt;
+        document.head.appendChild(style);
+    }
+
+    function addScript(txt) {
+        const script = document.createElement("script");
+        script.innerHTML = txt;
+        document.head.appendChild(script);
+    }
+
+    function addExternalCss(url) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = url;
+        document.head.appendChild(link);
+    }
+
+    function addExternalScript(url) {
+        const script = document.createElement("script");
+        script.src = url;
+        document.head.appendChild(script);
+    }
+
+
+    // Aspetta mezzo secondo e poi esegue la funzione
+    setTimeout(() => {
+        init()
+    }, 500);
+
+    window.addEventListener("hashchange", () => {
+        init();
+    });
