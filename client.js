@@ -187,7 +187,7 @@ function init() {
                     background: #000;
                 }
             `);
-
+        console.log(window);
             setTimeout(() => {
                     document.querySelectorAll('.LongTextTypeInput > textarea').forEach(el => {
                         if (el["data-mde"] == 1) return;
@@ -202,7 +202,7 @@ function init() {
                         }
                         );
                     });
-                }, 500);
+                }, 1000);
     }
 
 
