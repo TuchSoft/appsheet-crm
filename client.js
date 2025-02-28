@@ -186,6 +186,21 @@ function init() {
             `);
     }
 
+function addGenerallStyle() {
+           addCss(`
+                   .SlideshowPage__heading-label [
+                       font-weight: 600;
+                            color: white;
+                         font-size: 1rem;
+                         }
+
+                         .BaseTypeDisplay {
+ font-size: 0.95rem;
+                         }
+                
+           `);
+}
+
 
     function getUrlParameter(name) {
         const params = new URLSearchParams(window.location.hash.substring(1)); // Rimuove il '#' iniziale
