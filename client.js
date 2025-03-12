@@ -188,15 +188,9 @@ function init() {
 
 function addGenerallStyle() {
            addCss(`
-                   .SlideshowPage__heading-label [
-                       font-weight: 600;
-                            color: white;
-                         font-size: 1rem;
-                         }
-
-                         .BaseTypeDisplay {
- font-size: 0.95rem;
-                         }
+                .SlideshowPage__heading-label {font-weight: 600; color: white; font-size: 1rem;}
+                .BaseTypeDisplay {font-size: 0.95rem;}
+                .DesktopModeContainer { background-color: #9d9ea8;}
                 
            `);
 }
