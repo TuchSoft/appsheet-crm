@@ -1,71 +1,100 @@
-function init() {
-        if (document.body['data-init']) return;
-        document.body['data-init'] = 1;
-        dashboard();
-        initStatusColor();
-        addEditorStyle();
+
+document.addEventListener("pageChange", function () {
+    pageInit();
+});
+
+
+document.addEventListener("firstLoad", function () {
+    appInit();
+});
+
+
+function pageInit() {
+    dashboard();
+    initStatusColor();
+}
+
+
+function appInit() {
+    if (document.body['data-init']) return;
+    document.body['data-init'] = 1;
+    addGeneralStyle();
+    addEditorStyle();
+}
+
+
+function dashboard() {
+    const allowedViews = ["Projects_Detail", "Customers_Detail"]; // Array di view ammesse
+    const view = getUrlParameter("view");
+
+    // Controlla se la view è nell'array consentito
+    if (!allowedViews.includes(view)) {
+        console.log("View non ammessa:", view);
+        return;
     }
 
-    function dashboard() {
-        const allowedViews = ["Projects_Detail", "Customers_Detail"]; // Array di view ammesse
-        const view = getUrlParameter("view");
+    const columns = document.querySelectorAll('[data-testid="slideshow-page-column"]');
+    if (!columns) return;
 
-        // Controlla se la view è nell'array consentito
-        if (!allowedViews.includes(view)) {
-            console.log("View non ammessa:", view);
-            return;
-        }
+    // Seleziona il primo blocco di col1 e lo sposta nell'header
+    const infoCard = columns[0].querySelector('[data-testid="slideshow-page-card"]');
+    if (!infoCard) return;
 
-        const columns = document.querySelectorAll('[data-testid="slideshow-page-column"]');
-        if (!columns) return;
-        
-        // Seleziona il primo blocco di col1 e lo sposta nell'header
-        const infoCard = columns[0].querySelector('[data-testid="slideshow-page-card"]');
-        if (!infoCard) return;
-        
-        const headerColumn = document.querySelector('[data-testid="slideshow-page-header-column"]');
-        if (!headerColumn || headerColumn.children.length !== 1) return;
-        
-        headerColumn.appendChild(infoCard);
+    const _headerColumn = document.querySelector('[data-testid="slideshow-page-header-column"]');
+    if (!_headerColumn || _headerColumn.children.length !== 1) return;
+    const newDiv = document.createElement("div");
+    newDiv.classList.add("fixed-col"); 
+    _headerColumn.appendChild(newDiv); 
 
-        
-        
-        // Prende i restanti blocchi di col1 e tutti quelli di col2
-        const col1Cards = columns[0].querySelectorAll('[data-testid="slideshow-page-card"]');
-        const col2Cards = columns[1].querySelectorAll('[data-testid="slideshow-page-card"]');
-        
-        // Intercala i blocchi di col2 tra quelli di col1
-        const newOrder = [];
-        const maxLength = Math.max(col1Cards.length, col2Cards.length);
-        
-        if (col2Cards[0]) newOrder.push(col2Cards[0]);
-        for (let i = 0; i < maxLength; i++) {
-            if (col1Cards[i]) newOrder.push(col1Cards[i]);
-            if (col2Cards[i+1]) newOrder.push(col2Cards[i+1]);
-        }
-        console.log(newOrder);
-       
-        // Svuota col1 e riordina gli elementi
-        columns[0].innerHTML = "";
-        console.log(columns);
-        
-        newOrder.forEach((card) => {
-            console.log(card)
-            columns[0].appendChild(card)
-        });
-        
-        // Rimuove col2
-        columns[1].remove();
-        
+    const headerColumn = document.querySelector('.fixed-col');
+    headerColumn.appendChild(_headerColumn.querySelector('div'));
+    headerColumn.appendChild(infoCard);
 
-        // Inietta il CSS dinamicamente
-        addCss(`
-            [data-testid="slideshow-page-header-column"] > div[data-testid="slideshow-page-card"] {
+
+
+
+    // Prende i restanti blocchi di col1 e tutti quelli di col2
+    const col1Cards = columns[0].querySelectorAll('[data-testid="slideshow-page-card"]');
+    const col2Cards = columns[1].querySelectorAll('[data-testid="slideshow-page-card"]');
+
+    // Intercala i blocchi di col2 tra quelli di col1
+    const newOrder = [];
+    const maxLength = Math.max(col1Cards.length, col2Cards.length);
+
+    if (col2Cards[0]) newOrder.push(col2Cards[0]);
+    for (let i = 0; i < maxLength; i++) {
+        if (col1Cards[i]) newOrder.push(col1Cards[i]);
+        if (col2Cards[i + 1]) newOrder.push(col2Cards[i + 1]);
+    }
+    console.log(newOrder);
+
+    // Svuota col1 e riordina gli elementi
+    columns[0].innerHTML = "";
+    console.log(columns);
+
+    newOrder.forEach((card) => {
+        console.log(card)
+        columns[0].appendChild(card)
+    });
+
+    // Rimuove col2
+    columns[1].remove();
+
+
+    // Inietta il CSS dinamicamente
+    addCss(`
+            .fixed-col {
+                position: fixed;
+                overflow: scroll;
+                max-height: 85.5vh;
+            }
+            .fixed-col > div {
                 min-height: 200px !important;
                 position: relative !important;
+                 margin-top: 16px;
             }
-            [data-testid="slideshow-page-header-column"] > div[data-testid="slideshow-page-card"]:nth-of-type(2) {
-                margin-top: 16px;
+            .fixed-col > div:nth-of-type(1) {
+                margin-top: 0px !important;
             }
             [data-testid="slideshow-page-column"], .DesktopModeContainer {
                 max-width: 100% !important;
@@ -75,45 +104,45 @@ function init() {
             }
 
         `);
-    }
+}
 
-    function statusColor() {
-        document.querySelectorAll('.TextTypeDisplay__text').forEach(el => {
-            const text = el.textContent.trim().toLowerCase(); // Normalizza il testo
-            
-            const statusClasses = {
-                'active': 'status-active-text',
-                'draft': 'status-draft-text',
-                'on hold': 'status-onhold-text',
-                'archived': 'status-archived-text',
-                'to do': 'status-todo-text',
-                'in progress': 'status-inprogress-text',
-                'done': 'status-done-text'
-            };
-        
-            
-            
-        
-            // Aggiunge la classe specifica dello stato se esiste nella mappa
-            if (statusClasses[text]) {
-                el.classList.forEach(c => {
-                    if (c.includes('status-')) {
-                        el.classList.remove(c);
-                    }
-                });
-                el.classList.add(statusClasses[text]);
-                el.classList.add('status-text');
-                // Aggiunge la classe status-text-container al contenitore (elemento padre)
-                if (el.parentElement) {
-                    el.parentElement.classList.add('status-text-container');
+function statusColor() {
+    document.querySelectorAll('.TextTypeDisplay__text').forEach(el => {
+        const text = el.textContent.trim().toLowerCase(); // Normalizza il testo
+
+        const statusClasses = {
+            'active': 'status-active-text',
+            'draft': 'status-draft-text',
+            'on hold': 'status-onhold-text',
+            'archived': 'status-archived-text',
+            'to do': 'status-todo-text',
+            'in progress': 'status-inprogress-text',
+            'done': 'status-done-text'
+        };
+
+
+
+
+        // Aggiunge la classe specifica dello stato se esiste nella mappa
+        if (statusClasses[text]) {
+            el.classList.forEach(c => {
+                if (c.includes('status-')) {
+                    el.classList.remove(c);
                 }
-                //Aggiungi on change su text =>  statusColor()
+            });
+            el.classList.add(statusClasses[text]);
+            el.classList.add('status-text');
+            // Aggiunge la classe status-text-container al contenitore (elemento padre)
+            if (el.parentElement) {
+                el.parentElement.classList.add('status-text-container');
             }
-        
-            
-        });
+            //Aggiungi on change su text =>  statusColor()
+        }
 
-        addCss(`
+
+    });
+
+    addCss(`
             .status-text-container {
                 border-radius: 4px;
             }
@@ -131,23 +160,23 @@ function init() {
             .status-todo-text { background-color: rgba(180, 100, 255, 0.15); color: rgba(138, 43, 226, 1); border: 1px solid rgba(138, 43, 226, 0.5); }  
 
             `);
-        
-    }
 
-    function initStatusColor() {
+}
+
+function initStatusColor() {
+    statusColor();
+    // Osserva i cambiamenti nei nodi di testo e richiama statusColor() quando cambia il contenuto
+    const observer = new MutationObserver(() => {
         statusColor();
-        // Osserva i cambiamenti nei nodi di testo e richiama statusColor() quando cambia il contenuto
-        const observer = new MutationObserver(() => {
-            statusColor();
-        });
+    });
 
-        document.querySelectorAll('.status-text-container').forEach(el => {
-            observer.observe(el, { childList: true, subtree: true, characterData: true });
-        });
-    }
+    document.querySelectorAll('.status-text-container').forEach(el => {
+        observer.observe(el, { childList: true, subtree: true, characterData: true });
+    });
+}
 
-    function addEditorStyle() {
-        addCss(`
+function addEditorStyle() {
+    addCss(`
             .EasyMDEContainer .CodeMirror {
                     color: #ccc;
                     border-color: #333;
@@ -184,31 +213,27 @@ function init() {
                     background: #111;
                 }
             `);
-    }
+}
 
-function addGenerallStyle() {
-           addCss(`
-                .SlideshowPage__heading-label {font-weight: 600; color: white; font-size: 1rem;}
+function addGeneralStyle() {
+    console.log("Aggiungi stile generale");
+    addCss(`
+                .SlideshowPage__heading-label {font-weight: 600; font-size: 1rem;}
                 .BaseTypeDisplay {font-size: 0.95rem;}
-                .DesktopModeContainer { background-color: #9d9ea8;}
+                .BasePrimaryView:first-child { background-color:rgb(195, 196, 198);}
                 
            `);
 }
 
 
-    function getUrlParameter(name) {
-        const params = new URLSearchParams(window.location.hash.substring(1)); // Rimuove il '#' iniziale
-        return params.get(name);
-    }
+function getUrlParameter(name) {
+    const params = new URLSearchParams(window.location.hash.substring(1)); // Rimuove il '#' iniziale
+    return params.get(name);
+}
 
 
 
 
-    // Aspetta mezzo secondo e poi esegue la funzione
-    setTimeout(() => {
-        init()
-    }, 300);
 
-    window.addEventListener("hashchange", () => {
-        init();
-    });
+
+
