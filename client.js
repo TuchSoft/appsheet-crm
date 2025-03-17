@@ -25,7 +25,7 @@ function appInit() {
 
 
 function dashboard() {
-    const allowedViews = ["Projects_Detail", "Customers_Detail"]; // Array di view ammesse
+    const allowedViews = ["Projects_Detail", "Customers_Detail", "Task_Detail"]; // Array di view ammesse
     const view = getUrlParameter("view");
 
     // Controlla se la view è nell'array consentito
