@@ -12,6 +12,7 @@ document.addEventListener("firstLoad", function () {
 function pageInit() {
     dashboard();
     initStatusColor();
+    //initMde();
 }
 
 
@@ -40,22 +41,27 @@ function dashboard() {
     const infoCard = columns[0].querySelector('[data-testid="slideshow-page-card"]');
     if (!infoCard) return;
 
+    //Selezione header
     const _headerColumn = document.querySelector('[data-testid="slideshow-page-header-column"]');
-    if (!_headerColumn || _headerColumn.children.length !== 1) return;
+    if (!_headerColumn || _headerColumn["data-init"] == 1) return;
+    _headerColumn["data-init"] = 1;
+
+    //Creo contaienr dentro header
     const newDiv = document.createElement("div");
     newDiv.classList.add("fixed-col"); 
     _headerColumn.appendChild(newDiv); 
 
+    //Inserisco le prime 2 col in header 
     const headerColumn = document.querySelector('.fixed-col');
-    headerColumn.appendChild(_headerColumn.querySelector('div'));
-    headerColumn.appendChild(infoCard);
+    headerColumn.appendChild(_headerColumn.querySelector('div')); //Buttons
+    headerColumn.appendChild(infoCard); //Info
 
-
+    
 
 
     // Prende i restanti blocchi di col1 e tutti quelli di col2
     const col1Cards = columns[0].querySelectorAll('[data-testid="slideshow-page-card"]');
-    const col2Cards = columns[1].querySelectorAll('[data-testid="slideshow-page-card"]');
+    const col2Cards = columns[1] ? columns[1].querySelectorAll('[data-testid="slideshow-page-card"]') : [];
 
     // Intercala i blocchi di col2 tra quelli di col1
     const newOrder = [];
@@ -78,7 +84,7 @@ function dashboard() {
     });
 
     // Rimuove col2
-    columns[1].remove();
+    if (columns[1]) columns[1].remove();
 
 
     // Inietta il CSS dinamicamente
@@ -92,6 +98,7 @@ function dashboard() {
                 min-height: 200px !important;
                 position: relative !important;
                  margin-top: 16px;
+                 max-width: 400px;
             }
             .fixed-col > div:nth-of-type(1) {
                 margin-top: 0px !important;
@@ -177,41 +184,10 @@ function initStatusColor() {
 
 function addEditorStyle() {
     addCss(`
-            .EasyMDEContainer .CodeMirror {
-                    color: #ccc;
-                    border-color: #333;
-                         text-align: start;
-                   background-color: #111;
-                }
-                .EasyMDEContainer .cm-s-easymde .CodeMirror-cursor {
-                    border-color: #ccc;
-                }
-
-                .EasyMDEContainer .editor-toolbar > * {
-                    color: #ccc;
-                }
-
-                .EasyMDEContainer .editor-toolbar > .active, .editor-toolbar > button:hover, .editor-preview pre, .cm-s-easymde .cm-comment {
-                    background-color: #444;
-                }
-
-                .EasyMDEContainer .CodeMirror-fullscreen {
-                    background: #111;
-                }
-
-                .editor-toolbar {
-                    border-top: 1px solid #333;
-                    border-left: 1px solid #333;
-                    border-right: 1px solid #333;
-                }
-
-                .editor-toolbar.fullscreen {
-                    background: #111;
-                }
-
-                .editor-preview {
-                    background: #111;
-                }
+        .EasyMDEContainer .CodeMirror {
+            text-align: left;
+        }
+            
             `);
 }
 
@@ -231,6 +207,39 @@ function getUrlParameter(name) {
     return params.get(name);
 }
 
+
+function initMde() {
+    const interval = setInterval(() => {
+        if (typeof EasyMDE !== 'undefined') {  // Controlla se EasyMDE è disponibile
+            clearInterval(interval); // Interrompe l'intervallo dopo aver trovato EasyMDE
+
+            document.querySelectorAll('.LongTextTypeInput > textarea').forEach(el => {
+                if (el["data-mde"] == 1) return;
+                console.log('Easymde on:', el);
+                el["data-mde"] = 1;
+
+                const smde = new EasyMDE({
+                    element: el,
+                    maxHeight: '150px',
+                    forceSync: true,
+                    lineWrapping: true,
+                    indentWithTabs: false,
+                    spellChecker: false,
+                    status: false,
+                });
+
+                smde.codemirror.on("blur", function () {
+                    setTimeout(() => {
+                        el.textContent = smde.value();
+                        el.value = smde.value();
+                    }, 200);
+                });
+            });
+        } else {
+            console.log("EasyMDE not yet loaded");
+        }
+    }, 200);
+}
 
 
 
