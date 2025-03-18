@@ -203,7 +203,7 @@ function addGeneralStyle() {
                 [data-testid="slideshow-page-header"] div .TextTypeDisplay:first-child { font-size: 1.5rem; font-weight: 600; color: var(--secondaryText);display: inline-block;    vertical-align: middle;}
                 .SlideshowPage__header-image {vertical-align: middle; margin-left: 16px;}
                 [data-testid="non-card-header-overlay"], .SlideshowPage__header-image {width: unset; display: inline-block; position: relative;}
-                
+                img, img.ImageWithSpinner__image {object-fit: contain !important;}
                 
            `);
 }
