@@ -195,7 +195,7 @@ function addGeneralStyle() {
     console.log("Aggiungi stile generale");
     addCss(`
                 .SlideshowPage__heading-label {font-weight: 600; font-size: 1rem;}
-                .BaseTypeDisplay {font-size: 0.95rem;}
+               
                 .BasePrimaryView:first-child { background-color:rgb(195, 196, 198);}
                 .slideshow-page-header div .TextTypeDisplay__text:first-child { font-size: 1.5rem; font-weight: 600; }
                 .DeckRow__secondary-text {max-width: 85%;}
