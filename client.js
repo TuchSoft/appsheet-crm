@@ -195,10 +195,16 @@ function addGeneralStyle() {
     console.log("Aggiungi stile generale");
     addCss(`
                 .SlideshowPage__heading-label {font-weight: 600; font-size: 1rem;}
-               
                 .BasePrimaryView:first-child { background-color:rgb(195, 196, 198);}
-                .slideshow-page-header div .TextTypeDisplay__text:first-child { font-size: 1.5rem; font-weight: 600; }
                 .DeckRow__secondary-text {max-width: 85%;}
+                [data-testid="non-card-header-overlay"] {background: unset;padding: 0;padding-left: 16px;padding-top: 16px;}
+                [data-testid="slideshow-page-header"] {margin-bottom: 0}
+                [data-testid="slideshow-page-header"] .ImageWithSpinner {width: 100px;}
+                [data-testid="slideshow-page-header"] div .TextTypeDisplay:first-child { font-size: 1.5rem; font-weight: 600; color: var(--secondaryText);display: inline-block;    vertical-align: middle;}
+                .SlideshowPage__header-image {vertical-align: middle; margin-left: 16px;}
+                [data-testid="non-card-header-overlay"], .SlideshowPage__header-image {width: unset; display: inline-block; position: relative;}
+                
+                
            `);
 }
 
