@@ -189,14 +189,23 @@ function statusColor() {
 
 function initStatusColor() {
     setTimeout(() => statusColor(), 100);
+    
     // Osserva i cambiamenti nei nodi di testo e richiama statusColor() quando cambia il contenuto
-    const observer = new MutationObserver(() => {
-        statusColor();
-    });
+    const observer = new MutationObserver(() => statusColor());
 
     document.querySelectorAll('.hl-text-container').forEach(el => {
         observer.observe(el, { childList: true, subtree: true, characterData: true });
     });
+
+    // Watch the scroll event , and process the newly added element
+    $(".DeckView__list").each((i, el) => el.addEventListener("scroll", () => {
+        if (window.scrollUpdateTime && window.scrollUpdateTime > (Date.now() - 500)) return;
+        window.scrollUpdateTime = Date.now();
+        statusColor(1);
+    })); 
+
+    $(".DeckView__list").each((i, el) => el.addEventListener("scrollend", () => statusColor(1))); 
+    
 }
 
 function addEditorStyle() {
