@@ -1,4 +1,3 @@
-
 document.addEventListener("pageChange", function () {
     pageInit();
 });
@@ -117,67 +116,85 @@ function statusColor() {
     document.querySelectorAll('.TextTypeDisplay__text').forEach(el => {
         const text = el.textContent.trim().toLowerCase(); // Normalizza il testo
 
+
+
         const statusClasses = {
-            'active': 'status-active-text',
-            'draft': 'status-draft-text',
-            'on hold': 'status-onhold-text',
-            'archived': 'status-archived-text',
-            'to do': 'status-todo-text',
-            'in progress': 'status-inprogress-text',
-            'done': 'status-done-text'
+            'active': 'hl-green',
+            'draft': 'hl-white',
+            'on hold': 'hl-yellow',
+            'archived': 'hl-red',
+            'to do': 'hl-blue',
+            'in progress': 'hl-purple',
+            'done': 'hl-green',
+            'breaking': 'hl-red',
+            'high': 'hl-yellow',
+            'normal': 'hl-blue',
+            'low': 'hl-white',
         };
 
-
-
-
-        // Aggiunge la classe specifica dello stato se esiste nella mappa
-        if (statusClasses[text]) {
-            el.classList.forEach(c => {
-                if (c.includes('status-')) {
-                    el.classList.remove(c);
-                }
-            });
-            el.classList.add(statusClasses[text]);
-            el.classList.add('status-text');
-            // Aggiunge la classe status-text-container al contenitore (elemento padre)
-            if (el.parentElement) {
-                el.parentElement.classList.add('status-text-container');
+        var elms = [el];
+        if (text.includes('|')) {
+            let texts = text.split('|').filter(t => t.trim() != '');
+            console.log(texts);
+            
+            if (texts.length > 1) {
+                var el2 = el.cloneNode(true);
+                el.textContent = texts[0].toUpperCase();
+                el2.textContent = texts[1].toUpperCase();
+                el.insertAdjacentElement('afterend', el2);
+                elms = [el, el2];
             }
-            //Aggiungi on change su text =>  statusColor()
         }
 
+
+        elms.forEach(el => {
+            const t = el.textContent.trim().toLowerCase();
+            // Aggiunge la classe specifica dello stato se esiste nella mappa
+            if (statusClasses[t]) {
+                el.classList.forEach(c => {
+                    if (c.includes('hl-')) {
+                        el.classList.remove(c);
+                    }
+                });
+                el.classList.add(statusClasses[t]);
+                el.classList.add('hl-text');
+                // Aggiunge la classe hl-text-container al contenitore (elemento padre)
+                if (el.parentElement) {
+                    el.parentElement.classList.add('hl-text-container');
+                }
+                //Aggiungi on change su text =>  statusColor()
+            }
+        });
 
     });
 
     addCss(`
-            .status-text-container {
-                border-radius: 4px;
-            }
 
-            .status-text {
+
+            .hl-text {
                 padding: 8px;
                 line-height: 30px;
+                margin-left: 5px;
             }
 
-            .status-active-text, .status-done-text { background-color: rgba(150, 255, 150, 0.15); color: rgb(39, 167, 65); border: 1px solid rgba(60, 255, 100, 0.5); }  
-            .status-draft-text { background-color: rgba(255, 255, 255, 0.2); color: rgba(255, 255, 255, 1); border: 1px solid rgba(150, 150, 150, 0.5); }  
-            .status-onhold-text { background-color: rgba(255, 200, 100, 0.15); color: rgba(255, 165, 0, 1); border: 1px solid rgba(255, 165, 0, 0.5); }  
-            .status-archived-text { background-color: rgba(227, 89, 34, 0.15); color: rgb(167, 59, 59); border: 1px solid rgba(100, 100, 100, 0.5); }  
-            .status-inprogress-text { background-color: rgba(100, 180, 255, 0.15); color: rgba(30, 144, 255, 1); border: 1px solid rgba(30, 144, 255, 0.5); }  
-            .status-todo-text { background-color: rgba(180, 100, 255, 0.15); color: rgba(138, 43, 226, 1); border: 1px solid rgba(138, 43, 226, 0.5); }  
-
+            .hl-green { background-color: rgba(150, 255, 150, 0.15); color: rgb(39, 167, 65); border: 2px solid rgba(60, 255, 100, 0.5); }  
+            .hl-white { background-color: rgba(255, 255, 255, 0.3); color: rgba(60, 60, 60, 1); border: 2px solid rgba(150, 150, 150, 0.5); }  
+            .hl-yellow { background-color: rgba(255, 200, 100, 0.15); color: rgba(255, 165, 0, 1); border: 2px solid rgba(255, 165, 0, 0.5); }  
+            .hl-red, hl-breaking { background-color: rgba(227, 89, 34, 0.15); color: rgb(167, 59, 59); border: 2px solid rgba(100, 100, 100, 0.5); }  
+            .hl-blue { background-color: rgba(100, 180, 255, 0.15); color: rgba(30, 144, 255, 1); border: 2px solid rgba(30, 144, 255, 0.5); }  
+            .hl-purple { background-color: rgba(180, 100, 255, 0.15); color: rgba(138, 43, 226, 1); border: 2px solid rgba(138, 43, 226, 0.5); }  
             `);
 
 }
 
 function initStatusColor() {
-    statusColor();
+    setTimeout(() => statusColor(), 100);
     // Osserva i cambiamenti nei nodi di testo e richiama statusColor() quando cambia il contenuto
     const observer = new MutationObserver(() => {
         statusColor();
     });
 
-    document.querySelectorAll('.status-text-container').forEach(el => {
+    document.querySelectorAll('.hl-text-container').forEach(el => {
         observer.observe(el, { childList: true, subtree: true, characterData: true });
     });
 }
